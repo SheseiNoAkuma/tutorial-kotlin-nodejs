@@ -1,3 +1,14 @@
-### TODO 
+### how to build 
 
-- how to build node_modules via gradle? (npm i express)
+- gradlew build
+
+### how to run 
+
+- gradlew run
+
+
+### What the project do?
+
+Open a listener on port 3000, when receive a get request response with text message.
+
+All code is in Main.kt 
