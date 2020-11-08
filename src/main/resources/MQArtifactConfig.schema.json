@@ -1,0 +1,333 @@
+{
+	"definitions": {
+		"persistenceRef": {
+			"$id": "#/definitions/persistence",
+			"type": "object",
+			"title": "Persistence unit definition",
+			"additionalProperties": false,
+			"properties": {
+				"ref": {
+					"type": "string",
+					"title": "reference to persistence unit"
+				},
+				"field": {
+					"type": "string",
+					"title": "field name to inject"
+				}
+			}
+		}
+	},
+	"schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "http://example.com/root.json",
+	"type": "object",
+	"title": "The Root Schema",
+	"additionalProperties": false,
+	"required": [
+		"version",
+		"queues",
+		"ejbs",
+		"mdb"
+	],
+	"properties": {
+		"version": {
+			"type": "integer",
+			"minimum": 3,
+			"maximum": 3,
+			"title": "Json version"
+		},
+		"queues": {
+			"$id": "#/properties/queues",
+			"type": "array",
+			"title": "The Queues Schema",
+			"items": {
+				"$id": "#/properties/queues/items",
+				"type": "object",
+				"title": "The Items Schema",
+				"additionalProperties": false,
+				"required": [
+					"name",
+					"description",
+					"direction",
+					"qcf"
+				],
+				"properties": {
+					"name": {
+						"type": "string",
+						"title": "The name Schema"
+					},
+					"description": {
+						"type": "string",
+						"title": "The description Schema"
+					},
+					"direction": {
+						"type": "string",
+						"title": "The direction Schema",
+						"enum": [
+							"FROM",
+							"DLQ",
+							"TO",
+							"BOTH"
+						]
+					},
+					"dlq": {
+						"type": "object",
+						"title": "The Dlq Schema",
+						"required": [
+							"name"
+						],
+						"properties": {
+							"name": {
+								"$id": "#/properties/queues/items/properties/dlq/properties/$name",
+								"type": "string",
+								"title": "The name Schema"
+							},
+							"threshold": {
+								"$id": "#/properties/queues/items/properties/dlq/properties/threshold",
+								"type": "integer",
+								"title": "The Threshold Schema",
+								"default": 3
+							}
+						}
+					},
+					"ejbs": {
+						"type": "array",
+						"title": "The ebjListenerPortBindings Schema",
+						"items": {
+							"type": "object",
+							"title": "The Items Schema",
+							"required": [
+								"refName",
+								"usage"
+							],
+							"properties": {
+								"usage": {
+									"type": "string",
+									"title": "The ejb usage Schema",
+									"default": "Consumer",
+									"enum": [
+										"Consumes",
+										"Produces",
+										"ConsumesProduces"
+									]
+								}
+							}
+						}
+					},
+					"mdb": {
+						"type": "string",
+						"title": "The Mdb Schema"
+					},
+					"qcf": {
+						"type": "string",
+						"title": "The queue connection factory"
+					}
+				}
+			}
+		},
+		"ejbs": {
+			"$id": "#/properties/ejbs",
+			"type": "array",
+			"title": "The Ejbs Schema",
+			"items": {
+				"type": "object",
+				"title": "The Items Schema",
+				"additionalProperties": false,
+				"required": [
+					"ejbClass"
+				],
+				"properties": {
+					"ejbClass": {
+						"type": "string",
+						"title": "The ejb-class Schema",
+						"default": "",
+						"examples": [
+							"it.tasgroup.applicationadapter.engine.ejb.QueueInfoProviderEJB"
+						]
+					},
+					"businessLocal": {
+						"type": "string",
+						"title": "The ejb business local (interface)"
+					},
+					"persistence": {
+						"$ref:": "#/definitions/persistence"
+					},
+					"methods": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"name": {
+									"type": "string"
+								},
+								"transAttribute": {
+									"type": "string"
+								},
+								"params": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					},
+					"qcf": {
+						"type": "array",
+						"title": "The Queue connection factory reference",
+						"items": {
+							"type": "object",
+							"required": ["name", "ref"],
+							"additionalProperties": false,
+							"properties": {
+								"ref": {
+									"type": "string",
+									"title": "reference to qcf"
+								},
+								"name": {
+									"type": "string",
+									"title": "the resource ref name"
+								},
+								"type": {
+									"type": "string",
+									"title": "resource type",
+									"default": "javax.jms.QueueConnectionFactory"
+								}
+							}
+						}
+					},
+					"sessionType": {
+						"type": "string",
+						"title": "The ejb session type",
+						"default": "Stateless",
+						"enum": [
+							"Singleton",
+							"Stateful",
+							"Stateless",
+							"Skip"
+						]
+					},
+					"role": {
+						"type": "string",
+						"title": "The ejb role name",
+						"examples": ["IDM_Role"]
+					}
+				}
+			}
+		},
+		"mdb": {
+			"type": "array",
+			"title": "The Mdb Schema",
+			"items": {
+				"type": "object",
+				"title": "The Items Schema",
+				"additionalProperties": false,
+				"required": ["ejbClass", "persistence"],
+				"properties": {
+					"mdbName": {
+						"type": "string",
+						"title": "The Mdb name Schema"
+					},
+					"ejbClass":  {
+						"type": "string"
+					},
+					"envEntries": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"required": ["name", "type", "description"],
+							"additionalProperties": false,
+							"properties": {
+								"name": {
+									"type": "string"
+								},
+								"type": {
+									"type": "string"
+								},
+								"description": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"persistence": {
+						"$ref:": "#/definitions/persistence"
+					}
+				}
+			}
+		},
+		"qcf": {
+			"$id": "#/properties/qcf",
+			"type": "array",
+			"uniqueItems": true,
+			"title": "The QCF Schema",
+			"items": {
+				"type": "object",
+				"title": "The QCF Schema",
+				"additionalProperties": false,
+				"required": [
+					"name",
+					"jndi",
+					"type",
+					"isTopic"
+				],
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"jndi": {
+						"description": "the global jndi name of the resource",
+						"type": "string"
+					},
+					"isTopic": {
+						"type": "boolean"
+					},
+					"type": {
+						"type": "string",
+						"title": "the type of connection factory (AMQ / IBMMQ)",
+						"default": "IBMMQ",
+						"enum": [
+							"IBMMQ",
+							"AMQ"
+						]
+					},
+					"resourceAdapter": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"roles": {
+			"$id": "#/properties/roles",
+			"type": "array",
+			"title": "The Roles Schema",
+			"items": {
+				"$id": "#/properties/roles/items",
+				"type": "object",
+				"additionalProperties": false,
+				"title": "The Role Schema",
+				"required": [
+					"name",
+					"type"
+				],
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"title": "The role type definition",
+						"additionalProperties": false,
+						"default": "EJB_ROLE",
+						"enum": [
+							"EJB_ROLE"
+						]
+					}
+				}
+			}
+		}
+	}
+}

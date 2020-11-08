@@ -1,0 +1,25 @@
+plugins {
+    id 'org.jetbrains.kotlin.js' version '1.4.10'
+}
+
+group 'eu.gp'
+version 'ci-develop-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-js"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-js"
+    implementation(npm("express", "^4.17.1", true))
+}
+
+kotlin {
+    js {
+        nodejs {
+        }
+        binaries.executable()
+    }
+}
